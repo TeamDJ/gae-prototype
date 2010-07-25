@@ -1,0 +1,11 @@
+application: lifedashboard
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /auth.*
+  script: auth.py
+
+- url: /feed.*
+  script: feed.py
