@@ -9,3 +9,6 @@ handlers:
 
 - url: /feed.*
   script: feed.py
+  
+- url: /foo.*
+  script: foo.py

@@ -7,6 +7,7 @@ import cgi
 from google.appengine.ext import db
 from model import *
 import xml.dom.minidom
+import json
 
 FEED_URL = 'http://maps.google.com/maps/feeds/features/210912570095610105860/00048c2bba524da174c91/full'
 ATOM_NS = 'http://www.w3.org/2005/Atom'
@@ -19,18 +20,21 @@ class Fetcher(webapp.RequestHandler):
         result = urlfetch.fetch(url=FEED_URL,
                                         method=urlfetch.GET,
                                         headers={'Authorization':'AuthSub token=%s'%token.token})
-                
         dom = xml.dom.minidom.parseString(result.content)  
-        
         entries = dom.getElementsByTagNameNS(ATOM_NS, 'entry')
-        for entry in entries:
-            self.response.out.write('title: ' + getText(entry, ATOM_NS, 'title') + '<br/>')
-            self.response.out.write('updated: ' + getText(entry, ATOM_NS, 'updated') + '<br/>')
-            self.response.out.write('coordinates: ' + getText(entry, KML_NS, 'coordinates') + '<br/><br/>')
-            
-              
-        self.response.out.write("<pre>" + cgi.escape(dom.toprettyxml()) + "</pre>" )
         
+        locations = []
+        for entry in entries:
+            locations.append(getLocationJSON(entry))
+            
+        self.response.out.write(json.dumps(locations))
+ 
+def getLocationJSON(entry):
+    obj = {}
+    obj["title"] = getText(entry, ATOM_NS, 'title')
+    obj["updated_at"] = getText(entry, ATOM_NS, 'updated') 
+    obj["coordinates"] = getText(entry, KML_NS, 'coordinates').split(',')
+    return obj
     
 def getText(parent, namespace, elementName):
     

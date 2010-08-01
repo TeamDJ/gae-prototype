@@ -31,7 +31,7 @@ class Fetcher(webapp.RequestHandler):
             token.put()
         
         else:
-            next_url = atom.url.Url('http', settings.HOST_NAME, path='/auth').to_string()
+            next_url = atom.url.Url('http', settings.HOST_NAME, path='/auth2').to_string()
             authsub_url = "https://www.google.com/accounts/AuthSubRequest?next=%s&scope=%s&session=1&secure=0" % (next_url, AUTH_SCOPE)
             self.response.out.write('<a href=%s>click here</a>' % authsub_url)
 
